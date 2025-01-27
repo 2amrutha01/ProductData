@@ -14,7 +14,7 @@ class Navigation extends StatelessWidget {
     // Define your screens for Home and Cart
     final List<Widget> screens = [
       HomeScreen(), // Replace with your HomeScreen widget
-      CartList(), // Replace with your Cart widget
+      CartListScreen(), // Replace with your Cart widget
     ];
 
     return Scaffold(

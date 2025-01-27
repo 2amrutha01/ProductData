@@ -1,9 +1,9 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:product_listing_app/Model/ProductModel.dart';
 import 'package:product_listing_app/Provider/Cartprovider.dart';
+import 'package:product_listing_app/productdetails.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -43,7 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Boutique App'),
+        title: const Text('ProductList'),
         actions: [
           IconButton(
             icon: const Icon(Icons.shopping_cart),
@@ -75,49 +75,77 @@ class _HomeScreenState extends State<HomeScreen> {
               itemCount: products.length,
               itemBuilder: (ctx, index) {
                 final product = products[index];
-                return Card(
-                  elevation: 4,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: Image.network(
-                          product.image,
-                          fit: BoxFit.cover,
-                        ),
+                return GestureDetector(
+                  onTap: () {
+                    // Navigate to the product detail page
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            ProductDetailScreen(product: product),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          product.title,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
+                    );
+                  },
+                  child: Card(
+                    elevation: 4,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Expanded(
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(10.0),
+                            child: Image.network(
+                              product.image,
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                            ),
+                          ),
                         ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 4.0),
-                        child: Text(
-                          '\$${product.price.toStringAsFixed(2)}',
-                          style:
-                              const TextStyle(fontSize: 14, color: Colors.grey),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            product.title,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
                         ),
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          Provider.of<CartProvider>(context, listen: false)
-                              .addToCart(product);
-                        },
-                        style: ElevatedButton.styleFrom(
-                          minimumSize: const Size.fromHeight(40),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 4.0),
+                          child: Text(
+                            '\$${product.price.toStringAsFixed(2)}',
+                            style: const TextStyle(
+                                fontSize: 14, color: Colors.grey),
+                            textAlign: TextAlign.center,
+                          ),
                         ),
-                        child: const Text('Add to Cart'),
-                      ),
-                    ],
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 4.0),
+                          child: ElevatedButton(
+                            onPressed: () {
+                              // Add product to cart
+                              Provider.of<CartProvider>(context, listen: false)
+                                  .addToCart(product);
+
+                              // Show a snackbar to notify the user
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                    content:
+                                        Text('${product.title} added to cart')),
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                                minimumSize: const Size.fromHeight(40)),
+                            child: const Text('Add to Cart'),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 );
               },
